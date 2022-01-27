@@ -1,0 +1,1 @@
+io();     // Fn is available because of this script being loaded on index.html - "/socket.io/socket.io.js"
