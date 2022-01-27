@@ -12,9 +12,22 @@ const publicDirectoryPath = path.join(__dirname, '../public');
 const port=process.env.PORT || 3000;
 app.use(express.static(publicDirectoryPath));   // Serves up contents of this 'public' folder
 
+// server (emit) --> client(receive) - countUpdated
+// client (emit) --> server(receive) - increment
+
+let count=0;
 // listening for a given event to occur - "connection" and fn to run when that event occurs.
-io.on('connection',()=>{
+// io.on('connection',()=>{ // socket is an object that contains info about the new connection. We can use methods on this to communicate with that client.
+  io.on('connection',(socket)=>{
   console.log('New WebSocket connection');  // Sends msg to terminal wehn given client connects
+  // 2nd argument is available on client (chat.js) callback.
+  // No need to send this to all clients - just one who has connected
+  socket.emit('countUpdated', count);  // Sending and receiving events. Send (custom) event to client.
+  socket.on('increment',()=>{
+    count++;
+    // socket.emit('countUpdated', count); // Only emits to a single specific connection.
+    io.emit('countUpdated', count); // emits to EVERY connection!
+  });
 })
 
 // app.listen(port,()=>{
