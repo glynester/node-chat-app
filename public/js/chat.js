@@ -19,3 +19,19 @@ socket.on('message',(message)=>{    // Receives from server.
   socket.emit('sendMessage', message);    // Sends to server.
 });
 
+document.querySelector('#send-location').addEventListener('click',()=>{
+  // Modern browsers should have this.
+  if (!navigator.geolocation){
+    return alert("Your browser doesn't support geolocation!!!");
+  }
+  // getCurrentPosition is asynchronous but doesn't support promises or async await. Have to use callback
+  navigator.geolocation.getCurrentPosition((position)=>{
+    // console.log(position);
+    // This didn't work when I jsut sent position back to the server.
+    socket.emit('sendLocation', {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    });
+  })
+  
+})

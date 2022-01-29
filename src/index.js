@@ -29,6 +29,12 @@ socket.on("disconnect", ()=>{
   io.emit('message', "User has disconnected!!!");
 })
 
+socket.on('sendLocation',(coords)=>{
+  console.log("position: ",coords)
+  // io.emit('message',`New user has joined with latitude: ${coords.latitude} and longitude: ${coords.longitude}.`);
+  io.emit('message',`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`);
+})
+
 })
 // Note - "message" event is emitted twice from server (see above) with different messages.
 
