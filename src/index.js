@@ -2,6 +2,7 @@ const path=require('path'); // express core module
 const http=require('http'); // express core module
 const express=require('express');
 const socketio=require('socket.io');
+const Filter=require('bad-words');
 
 const app=express();
 const server = http.createServer(app); // creates new webserver. Ordinarily this is automatically done but we specifically need to access this server variable for setting up socketio.
@@ -19,9 +20,16 @@ io.on('connection',(socket)=>{
   // Like io.emit except it excludes the person (socket) who has just connected.
   socket.broadcast.emit('message', "A new user has joined!!!");
   
-  socket.on('sendMessage', (message)=>{ // When server receives a message from one socket, send it to all sockets (with io.emit)
-    console.log(message);
+  // socket.on('sendMessage', (message)=>{ // When server receives a message from one socket, send it to all sockets (with io.emit)
+  // Add callback for the acknowledgement
+  socket.on('sendMessage', (message, callback)=>{   // Callback runs code for the acknowledgement
+    const filter = new Filter();
+    if (filter.isProfane(message)){
+      return callback('Profanity is not allowed!!!');
+    }
     io.emit('message', message); // Sent to all sockets.
+    // callback("Server received this!!!");      // Can add as many args here as you want. Callback called by receiver.
+    callback();
   })
 // Client has already disconnected so no chance that they will get the message so can still use io.emit
 // Disconnect is a standard event handled by socket.io library.
@@ -29,10 +37,11 @@ socket.on("disconnect", ()=>{
   io.emit('message', "User has disconnected!!!");
 })
 
-socket.on('sendLocation',(coords)=>{
+socket.on('sendLocation',(coords, callback)=>{
   console.log("position: ",coords)
   // io.emit('message',`New user has joined with latitude: ${coords.latitude} and longitude: ${coords.longitude}.`);
   io.emit('message',`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`);
+  callback(); // callback runs once location has been shared. No need to pass an argument.
 })
 
 })

@@ -16,7 +16,17 @@ socket.on('message',(message)=>{    // Receives from server.
   // const message = e.target.message.value;  // This also works
   const message = e.target.elements.message.value;
   // console.log("Button clicked and msg is "+messageToServer);
-  socket.emit('sendMessage', message);    // Sends to server.
+  // socket.emit('sendMessage', message);    // Sends to server.
+  // Data can be any number of args but last function is the acknowledgement (from server in this case). Need to change server code too.
+  // socket.emit('sendMessage', message,(servMsg)=>{
+  //   console.log("The message was delivered",servMsg);
+  // });    // Sends to server.
+  socket.emit('sendMessage', message,(error)=>{
+    if (error){
+      return console.log(error);
+    }
+    console.log("Message delivered!!!");
+  });    // Se
 });
 
 document.querySelector('#send-location').addEventListener('click',()=>{
@@ -27,10 +37,12 @@ document.querySelector('#send-location').addEventListener('click',()=>{
   // getCurrentPosition is asynchronous but doesn't support promises or async await. Have to use callback
   navigator.geolocation.getCurrentPosition((position)=>{
     // console.log(position);
-    // This didn't work when I jsut sent position back to the server.
-    socket.emit('sendLocation', {
+    // This didn't work when I just sent position back to the server.
+    socket.emit('sendLocation', {   // first argument is event name, then location data and thrid arg is acknowledgement callback.
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
+    },()=>{     // callback function.
+      console.log("Location Shared!!!");
     });
   })
   
