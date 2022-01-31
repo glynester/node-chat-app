@@ -7,10 +7,20 @@ const $messageForm =document.querySelector('#message-form');
 const $messageFormInput=$messageForm.querySelector('input');
 const $messageFormButton=$messageForm.querySelector('button');
 const $sendLocationButton=document.querySelector('#send-location');
+const $messages=document.querySelector('#messages');
+
+// Templates
+const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML
 
 // Note - "message" event is received twice with different messages from server.
 socket.on('message',(message)=>{    // Receives from server.
   console.log(message);
+  // Need access to template and place where we are going to put it.
+  // const html = Mustache.render($messageTemplate);     // Stores html to be rendered in the browser. Template is the only argument.
+  const html = Mustache.render($messageTemplate,{
+    message,            // message: message
+  });   // Data being passed is done using an object (with key value pairs) as the 2nd argument.
+  $messages.insertAdjacentHTML('beforeend',html);     // Insert 'beforeend' - just before element ends so new items at the top.
 })
 
 // document.querySelector('form').addEventListener('submit',(e)=>{
