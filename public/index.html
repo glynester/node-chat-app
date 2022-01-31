@@ -4,31 +4,50 @@
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
   <title>Chat App</title>
+  <link rel="icon" href="/img/favicon.png">
+  <link rel="stylesheet" href="/css/styles.css">
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
   <!-- <script src='main.js'></script> -->
 </head>
 <body>
-  <h1>Chat App</h1>
-  <div id="messages"></div>
-  <form id='message-form'>
-    <input name='message' placeholder="Enter message" autocomplete="off">
-    <button>Send Message</button>
-  </form>
+  <div class='chat'>
+    <div class=chat__sidebar>
 
-  <button id="send-location">Share Location</button>
+    </div>
+    <div class='chat__main'>
+      <div id="messages" class='chat__messages'></div>
+      
+      <div class='compose'>
+        <form id='message-form'>
+          <input name='message' placeholder="Enter message" autocomplete="off">
+          <button>Send Message</button>
+        </form>
+        <button id="send-location">Share Location</button>
+      </div>      
+    </div>
+  </div>
 
   <!-- Template for mustache library - inside script tags!!!. These are only seen when we render content. -->
   <script id = "message-template" type="text/html">            <!-- have to have this=>    type="text/html"  -->
-    <div>
-      <!-- <p>This is a message</p> -->
-      <p>{{createdAt}} - {{message}}</p>
+    <div class = 'message'>
+      <p>
+        <span class='message__name'>Dummy User name</span>
+        <span class='message__meta'>{{createdAt}}</span>
+      </p>
+      <p>{{message}}</p>
     </div>
   </script>
   <script id="location-message-template" type="text/html">
-    <div><p>
-      {{createdAt}} - <a href="{{url}}" target="_blank">My current Location</a>
-  </div></p>
+    <div class='message'>
+      <p>
+        <span class='message__name'>Dummy User name</span>
+        <span class='message__meta'>{{createdAt}}</span>
+      </p>
+      <p>
+        <a href="{{url}}" target="_blank">My current Location</a>
+      </p>
+  </div>
   </script>
  
 
