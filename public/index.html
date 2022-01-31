@@ -12,20 +12,25 @@
   <h1>Chat App</h1>
   <div id="messages"></div>
   <form id='message-form'>
-    <input name='message' placeholder="Enter message">
+    <input name='message' placeholder="Enter message" autocomplete="off">
     <button>Send Message</button>
   </form>
 
   <button id="send-location">Share Location</button>
 
   <!-- Template for mustache library - inside script tags!!!. These are only seen when we render content. -->
-  <script id = "message-template" type="text/html">
+  <script id = "message-template" type="text/html">            <!-- have to have this=>    type="text/html"  -->
     <div>
       <!-- <p>This is a message</p> -->
       <p>{{message}}</p>
     </div>
   </script>
-  
+  <script id="location-message-template" type="text/html">
+    <div><p>
+      <a href="{{url}}" target="_blank">My current Location</a>
+  </div></p>
+  </script>
+ 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>

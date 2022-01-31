@@ -40,7 +40,7 @@ socket.on("disconnect", ()=>{
 socket.on('sendLocation',(coords, callback)=>{
   console.log("position: ",coords)
   // io.emit('message',`New user has joined with latitude: ${coords.latitude} and longitude: ${coords.longitude}.`);
-  io.emit('message',`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`);
+  io.emit('locationMessage',`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`);
   callback(); // callback runs once location has been shared. No need to pass an argument.
 })
 

@@ -10,7 +10,8 @@ const $sendLocationButton=document.querySelector('#send-location');
 const $messages=document.querySelector('#messages');
 
 // Templates
-const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML
+const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML <= Must have this!
+const $locationMessageTemplate=document.querySelector('#location-message-template').innerHTML;
 
 // Note - "message" event is received twice with different messages from server.
 socket.on('message',(message)=>{    // Receives from server.
@@ -20,7 +21,16 @@ socket.on('message',(message)=>{    // Receives from server.
   const html = Mustache.render($messageTemplate,{
     message,            // message: message
   });   // Data being passed is done using an object (with key value pairs) as the 2nd argument.
-  $messages.insertAdjacentHTML('beforeend',html);     // Insert 'beforeend' - just before element ends so new items at the top.
+  $messages.insertAdjacentHTML('beforeend', html);     // Insert 'beforeend' - just before element ends so new items at the top.
+})
+
+// Separate code so we can run a different template.
+socket.on('locationMessage',(url)=>{
+  console.log(url);
+   const html = Mustache.render($locationMessageTemplate,{
+    url,
+  })
+  $messages.insertAdjacentHTML('beforeend', html);
 })
 
 // document.querySelector('form').addEventListener('submit',(e)=>{
