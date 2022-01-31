@@ -3,6 +3,7 @@ const http=require('http'); // express core module
 const express=require('express');
 const socketio=require('socket.io');
 const Filter=require('bad-words');
+const { generateMessage }=require('./utils/messages.js');
 
 const app=express();
 const server = http.createServer(app); // creates new webserver. Ordinarily this is automatically done but we specifically need to access this server variable for setting up socketio.
@@ -15,10 +16,15 @@ app.use(express.static(publicDirectoryPath));   // SERVES up contents of this 'p
 // Main built in event = 'connection'
 io.on('connection',(socket)=>{
   console.log("New Web Socket Connection!!!");
-  socket.emit('message',"Welcome to my realtime messaging app");   // Sends msg to terminal when given client connects
-  
+  // socket.emit('message',"Welcome to my realtime messaging app");   // Sends msg to terminal when given client connects
+  // socket.emit('message',{
+  //   text: "Welcome to my realtime messaging app",
+  //   createdAt: new Date().getTime(),
+  // });   // Sends msg to terminal when given client connects
+  socket.emit('message', generateMessage("Welcome to my realtime messaging app"));
+
   // Like io.emit except it excludes the person (socket) who has just connected.
-  socket.broadcast.emit('message', "A new user has joined!!!");
+  socket.broadcast.emit('message', generateMessage("A new user has joined!!!"));
   
   // socket.on('sendMessage', (message)=>{ // When server receives a message from one socket, send it to all sockets (with io.emit)
   // Add callback for the acknowledgement
@@ -27,14 +33,14 @@ io.on('connection',(socket)=>{
     if (filter.isProfane(message)){
       return callback('Profanity is not allowed!!!');
     }
-    io.emit('message', message); // Sent to all sockets.
+    io.emit('message', generateMessage(message)); // Sent to all sockets.
     // callback("Server received this!!!");      // Can add as many args here as you want. Callback called by receiver.
     callback();
   })
 // Client has already disconnected so no chance that they will get the message so can still use io.emit
 // Disconnect is a standard event handled by socket.io library.
 socket.on("disconnect", ()=>{
-  io.emit('message', "User has disconnected!!!");
+  io.emit('message', generateMessage("User has disconnected!!!"));
 })
 
 socket.on('sendLocation',(coords, callback)=>{

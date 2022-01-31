@@ -15,11 +15,12 @@ const $locationMessageTemplate=document.querySelector('#location-message-templat
 
 // Note - "message" event is received twice with different messages from server.
 socket.on('message',(message)=>{    // Receives from server.
-  console.log(message);
+  console.log(message);   // Message is now an object.
   // Need access to template and place where we are going to put it.
   // const html = Mustache.render($messageTemplate);     // Stores html to be rendered in the browser. Template is the only argument.
   const html = Mustache.render($messageTemplate,{
-    message,            // message: message
+    message: message.text,            // message: message
+    createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   });   // Data being passed is done using an object (with key value pairs) as the 2nd argument.
   $messages.insertAdjacentHTML('beforeend', html);     // Insert 'beforeend' - just before element ends so new items at the top.
 })
