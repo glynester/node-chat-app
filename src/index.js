@@ -3,7 +3,7 @@ const http=require('http'); // express core module
 const express=require('express');
 const socketio=require('socket.io');
 const Filter=require('bad-words');
-const { generateMessage }=require('./utils/messages.js');
+const { generateMessage, generateLocationMessage }=require('./utils/messages.js');
 
 const app=express();
 const server = http.createServer(app); // creates new webserver. Ordinarily this is automatically done but we specifically need to access this server variable for setting up socketio.
@@ -46,7 +46,7 @@ socket.on("disconnect", ()=>{
 socket.on('sendLocation',(coords, callback)=>{
   console.log("position: ",coords)
   // io.emit('message',`New user has joined with latitude: ${coords.latitude} and longitude: ${coords.longitude}.`);
-  io.emit('locationMessage',`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`);
+  io.emit('locationMessage',generateLocationMessage(`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`));
   callback(); // callback runs once location has been shared. No need to pass an argument.
 })
 

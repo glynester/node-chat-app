@@ -26,10 +26,11 @@ socket.on('message',(message)=>{    // Receives from server.
 })
 
 // Separate code so we can run a different template.
-socket.on('locationMessage',(url)=>{
-  console.log(url);
+socket.on('locationMessage',(message)=>{
+  console.log(message);
    const html = Mustache.render($locationMessageTemplate,{
-    url,
+    url: message.url,
+    createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   })
   $messages.insertAdjacentHTML('beforeend', html);
 })
