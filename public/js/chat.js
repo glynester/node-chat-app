@@ -13,6 +13,12 @@ const $messages=document.querySelector('#messages');
 const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML <= Must have this!
 const $locationMessageTemplate=document.querySelector('#location-message-template').innerHTML;
 
+// Options
+// location.search gives the query string in a web address
+// ignoreQueryPrefix ignores the '?' in the query string.
+// returns an object with the query string keys as keys.
+const {username, room}=Qs.parse(location.search, {ignoreQueryPrefix: true, })   // Query String (qs) parses the query string
+
 // Note - "message" event is received twice with different messages from server.
 socket.on('message',(message)=>{    // Receives from server.
   console.log(message);   // Message is now an object.
@@ -79,3 +85,5 @@ $sendLocationButton.addEventListener('click',()=>{
   })
   
 })
+
+socket.emit('join',{ username, room}); 

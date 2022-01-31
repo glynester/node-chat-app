@@ -21,11 +21,20 @@ io.on('connection',(socket)=>{
   //   text: "Welcome to my realtime messaging app",
   //   createdAt: new Date().getTime(),
   // });   // Sends msg to terminal when given client connects
-  socket.emit('message', generateMessage("Welcome to my realtime messaging app"));
+  // socket.emit('message', generateMessage("Welcome to my realtime messaging app"));
 
-  // Like io.emit except it excludes the person (socket) who has just connected.
-  socket.broadcast.emit('message', generateMessage("A new user has joined!!!"));
+  // // Like io.emit except it excludes the person (socket) who has just connected.
+  // socket.broadcast.emit('message', generateMessage("A new user has joined!!!"));
   
+  socket.on('join',({username, room})=>{
+    socket.join(room);    // .join - creates chatroom. 
+    // io.to.emit => will only go to people in that room
+    // socket.broadcast.to.emit => goes to everyone in that room except that user (client)
+    socket.emit('message', generateMessage("Welcome to my realtime messaging app"));
+    socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!!!`));
+  })
+
+
   // socket.on('sendMessage', (message)=>{ // When server receives a message from one socket, send it to all sockets (with io.emit)
   // Add callback for the acknowledgement
   socket.on('sendMessage', (message, callback)=>{   // Callback runs code for the acknowledgement
@@ -33,7 +42,8 @@ io.on('connection',(socket)=>{
     if (filter.isProfane(message)){
       return callback('Profanity is not allowed!!!');
     }
-    io.emit('message', generateMessage(message)); // Sent to all sockets.
+    // 'Free Room' - Temporarily hard wired!
+    io.to('Free Room').emit('message', generateMessage(message)); // Sent to all sockets.
     // callback("Server received this!!!");      // Can add as many args here as you want. Callback called by receiver.
     callback();
   })
