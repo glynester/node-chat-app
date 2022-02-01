@@ -33,30 +33,65 @@ const removeUser=(id)=>{
     return users.splice(index,1)[0]; // Faster than filter removal method - will stop searching once match is found.
   }
 }
-addUser({
-  id: 22,
-  username: '    Glenn     ',
-  room: '   Sporty Room    '
-});
 
-console.log(users);
+const getUser=(id)=>{
+  return users.find(user=>user.id === id);
+}
 
-const res = 
-addUser({
-  id: 33,
-  username: '         ',
-  room: '       '
-});
-console.log(res);
+const getUsersInRoom=(room)=>{
+  // No need to sanitize room as coming from server.
+  return users.filter(user=>user.room===room);
+}
 
-const res2 = 
-addUser({
-  id: 22,
-  username: 'Glenn',
-  room: 'Sporty Room'
-});
-console.log(res2);
+module.exports= {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+}
 
-const removedUser = removeUser(22);
-console.log(removedUser);
-console.log(users);
+// addUser({
+//   id: 22,
+//   username: '    Glenn     ',
+//   room: '   Sporty Room    '
+// });
+// console.log(users);
+
+// addUser({
+//   id: 42,
+//   username: 'Boo',
+//   room: 'Sporty Room'
+// });
+
+// addUser({
+//   id: 32,
+//   username: 'Freddi',
+//   room: 'Geeky Room'
+// });
+
+// const res = 
+// addUser({
+//   id: 33,
+//   username: '         ',
+//   room: '       '
+// });
+// console.log(res);
+
+// const res2 = 
+// addUser({
+//   id: 22,
+//   username: 'Glenn',
+//   room: 'Sporty Room'
+// });
+// console.log(res2);
+
+// // const removedUser = removeUser(22);
+// // console.log("removedUser",removedUser);
+// // console.log("users",users);
+
+// console.log("getUser(42)",getUser(42));
+// console.log("getUser(999)",getUser(999));
+// console.log("users",users);
+// console.log("getUsersInRoom=>",getUsersInRoom('sporty room'));
+// console.log("getUsersInRoom=>",getUsersInRoom('geeky room'));
+
