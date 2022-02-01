@@ -4,6 +4,7 @@ const express=require('express');
 const socketio=require('socket.io');
 const Filter=require('bad-words');
 const { generateMessage, generateLocationMessage }=require('./utils/messages.js');
+const { addUser, removeUser, getUser, getUsersInRoom, } = require('./utils/users.js')
 
 const app=express();
 const server = http.createServer(app); // creates new webserver. Ordinarily this is automatically done but we specifically need to access this server variable for setting up socketio.
@@ -26,12 +27,22 @@ io.on('connection',(socket)=>{
   // // Like io.emit except it excludes the person (socket) who has just connected.
   // socket.broadcast.emit('message', generateMessage("A new user has joined!!!"));
   
-  socket.on('join',({username, room})=>{
-    socket.join(room);    // .join - creates chatroom. 
+  // socket.on('join',({username, room})=>{
+    // socket.on('join',({username, room},callback)=>{
+    // const { error, user } = addUser({ id:socket.id, username, room });  // socket.id is unique ID for that particular connection.
+    socket.on('join',(options,callback)=>{ // These 2 lines are effectively the same as 2 commented lines above
+      const { error, user } = addUser({ id:socket.id, ...options }); 
+    if (error){
+      // return socket.emit('message',generateMessage(error));
+      return callback(error);
+    }
+    // 'user.room' has been sanitized unlike 'room'
+    socket.join(user.room);    // .join - creates chatroom. 
     // io.to.emit => will only go to people in that room
     // socket.broadcast.to.emit => goes to everyone in that room except that user (client)
     socket.emit('message', generateMessage("Welcome to my realtime messaging app"));
-    socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!!!`));
+    socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!!!`));
+    callback(); // Calling without args, i.e. no error.
   })
 
 
@@ -43,14 +54,18 @@ io.on('connection',(socket)=>{
       return callback('Profanity is not allowed!!!');
     }
     // 'Free Room' - Temporarily hard wired!
-    io.to('Free Room').emit('message', generateMessage(message)); // Sent to all sockets.
+    io.to('free room').emit('message', generateMessage(message)); // Sent to all sockets.
     // callback("Server received this!!!");      // Can add as many args here as you want. Callback called by receiver.
     callback();
   })
 // Client has already disconnected so no chance that they will get the message so can still use io.emit
 // Disconnect is a standard event handled by socket.io library.
 socket.on("disconnect", ()=>{
-  io.emit('message', generateMessage("User has disconnected!!!"));
+  const user = removeUser(socket.id);
+  if (user){    // User might have never successfully joined a chat room. If they didn't then no need to send them this message.
+    // io.emit('message', generateMessage("User has disconnected!!!"));
+    io.to(user.room).emit('message', generateMessage(`${user.username} has disconnected!!!`));
+  }
 })
 
 socket.on('sendLocation',(coords, callback)=>{

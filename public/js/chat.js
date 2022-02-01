@@ -86,4 +86,11 @@ $sendLocationButton.addEventListener('click',()=>{
   
 })
 
-socket.emit('join',{ username, room}); 
+// socket.emit('join',{ username, room}); 
+// Acknowledgment function added as final argument to emit
+socket.emit('join',{ username, room},(error)=>{
+  if (error){
+    alert(error);
+    location.href='/';  // Redirect to root of site - join page.
+  }
+}); 
