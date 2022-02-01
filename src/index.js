@@ -40,8 +40,8 @@ io.on('connection',(socket)=>{
     socket.join(user.room);    // .join - creates chatroom. 
     // io.to.emit => will only go to people in that room
     // socket.broadcast.to.emit => goes to everyone in that room except that user (client)
-    socket.emit('message', generateMessage("Welcome to my realtime messaging app"));
-    socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!!!`));
+    socket.emit('message', generateMessage("Admin", "Welcome to my realtime messaging app"));
+    socket.broadcast.to(user.room).emit('message', generateMessage("Admin", `${user.username} has joined!!!`));
     callback(); // Calling without args, i.e. no error.
   })
 
@@ -50,11 +50,12 @@ io.on('connection',(socket)=>{
   // Add callback for the acknowledgement
   socket.on('sendMessage', (message, callback)=>{   // Callback runs code for the acknowledgement
     const filter = new Filter();
+    const user = getUser(socket.id);
     if (filter.isProfane(message)){
       return callback('Profanity is not allowed!!!');
     }
     // 'Free Room' - Temporarily hard wired!
-    io.to('free room').emit('message', generateMessage(message)); // Sent to all sockets.
+    io.to(user.room).emit('message', generateMessage(user.username, message)); // Sent to all sockets.
     // callback("Server received this!!!");      // Can add as many args here as you want. Callback called by receiver.
     callback();
   })
@@ -64,14 +65,15 @@ socket.on("disconnect", ()=>{
   const user = removeUser(socket.id);
   if (user){    // User might have never successfully joined a chat room. If they didn't then no need to send them this message.
     // io.emit('message', generateMessage("User has disconnected!!!"));
-    io.to(user.room).emit('message', generateMessage(`${user.username} has disconnected!!!`));
+    io.to(user.room).emit('message', generateMessage("Admin", `${user.username} has disconnected!!!`));
   }
 })
 
 socket.on('sendLocation',(coords, callback)=>{
+  const user = getUser(socket.id);
   console.log("position: ",coords)
   // io.emit('message',`New user has joined with latitude: ${coords.latitude} and longitude: ${coords.longitude}.`);
-  io.emit('locationMessage',generateLocationMessage(`https://google.com/maps/?q=${coords.latitude},${coords.longitude}`));
+  io.to(user.room).emit('locationMessage',generateLocationMessage(user.username, `https://google.com/maps/?q=${coords.latitude},${coords.longitude}`));
   callback(); // callback runs once location has been shared. No need to pass an argument.
 })
 

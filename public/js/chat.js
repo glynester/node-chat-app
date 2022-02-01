@@ -25,6 +25,7 @@ socket.on('message',(message)=>{    // Receives from server.
   // Need access to template and place where we are going to put it.
   // const html = Mustache.render($messageTemplate);     // Stores html to be rendered in the browser. Template is the only argument.
   const html = Mustache.render($messageTemplate,{
+    username: message.username,
     message: message.text,            // message: message
     createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   });   // Data being passed is done using an object (with key value pairs) as the 2nd argument.
@@ -35,6 +36,7 @@ socket.on('message',(message)=>{    // Receives from server.
 socket.on('locationMessage',(message)=>{
   console.log(message);
    const html = Mustache.render($locationMessageTemplate,{
+    username: message.username,
     url: message.url,
     createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   })
