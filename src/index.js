@@ -42,6 +42,10 @@ io.on('connection',(socket)=>{
     // socket.broadcast.to.emit => goes to everyone in that room except that user (client)
     socket.emit('message', generateMessage("Admin", "Welcome to my realtime messaging app"));
     socket.broadcast.to(user.room).emit('message', generateMessage("Admin", `${user.username} has joined!!!`));
+    io.to(user.room).emit('roomData',{
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
     callback(); // Calling without args, i.e. no error.
   })
 
@@ -66,6 +70,10 @@ socket.on("disconnect", ()=>{
   if (user){    // User might have never successfully joined a chat room. If they didn't then no need to send them this message.
     // io.emit('message', generateMessage("User has disconnected!!!"));
     io.to(user.room).emit('message', generateMessage("Admin", `${user.username} has disconnected!!!`));
+    io.to(user.room).emit('roomData',{
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    })
   }
 })
 

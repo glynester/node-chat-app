@@ -8,10 +8,12 @@ const $messageFormInput=$messageForm.querySelector('input');
 const $messageFormButton=$messageForm.querySelector('button');
 const $sendLocationButton=document.querySelector('#send-location');
 const $messages=document.querySelector('#messages');
+const $sidebar=document.querySelector('#sidebar');
 
 // Templates
 const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML <= Must have this!
 const $locationMessageTemplate=document.querySelector('#location-message-template').innerHTML;
+const $sidebarTemplate=document.querySelector('#sidebar-template').innerHTML;
 
 // Options
 // location.search gives the query string in a web address
@@ -41,6 +43,15 @@ socket.on('locationMessage',(message)=>{
     createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   })
   $messages.insertAdjacentHTML('beforeend', html);
+})
+
+socket.on('roomData',({room, users})=>{
+  console.log(room, users);
+  const html = Mustache.render($sidebarTemplate,{
+    room,
+    users,
+  })
+  $sidebar.innerHTML=html;
 })
 
 // document.querySelector('form').addEventListener('submit',(e)=>{
