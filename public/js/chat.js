@@ -21,6 +21,27 @@ const $sidebarTemplate=document.querySelector('#sidebar-template').innerHTML;
 // returns an object with the query string keys as keys.
 const {username, room}=Qs.parse(location.search, {ignoreQueryPrefix: true, })   // Query String (qs) parses the query string
 
+const autoscroll=()=>{
+  // need new message element to be able to run the calculation
+  const $newMessage = $messages.lastElementChild;
+  // Get height of new message - including margin, etc.
+  const newMessageStyles = getComputedStyle($newMessage);
+  const newMessageMargin = parseInt(newMessageStyles.marginBottom); // extracts number from '16px'
+  const newMessageHeight=$newMessage.offsetHeight+newMessageMargin;
+  // console.log(newMessageStyles);   // see all styles for that element
+  // console.log(newMessageMargin);
+  // Visible height
+  const visibleHeight = $messages.offsetHeight;
+  // Height of messages container
+  const containerHeight = $messages.scrollHeight;
+  // How far have I scrolled
+  const scrollOffset = $messages.scrollTop + visibleHeight;   // distance scrolled from top. 0 when right at the top.
+  // Were we at bottom BEFORE last message was added.
+  if (containerHeight - newMessageHeight<= scrollOffset){  // Condition for when we should scroll to the bottom.
+    $messages.scrollTop = $messages.scrollHeight  // Code to scroll to the bottom
+  }
+}
+
 // Note - "message" event is received twice with different messages from server.
 socket.on('message',(message)=>{    // Receives from server.
   console.log(message);   // Message is now an object.
@@ -32,6 +53,7 @@ socket.on('message',(message)=>{    // Receives from server.
     createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   });   // Data being passed is done using an object (with key value pairs) as the 2nd argument.
   $messages.insertAdjacentHTML('beforeend', html);     // Insert 'beforeend' - just before element ends so new items at the top.
+  autoscroll();
 })
 
 // Separate code so we can run a different template.
@@ -43,6 +65,7 @@ socket.on('locationMessage',(message)=>{
     createdAt: moment(message.createdAt).utc().format('dddd Do MMMM YYYY, HH:mm'),
   })
   $messages.insertAdjacentHTML('beforeend', html);
+  autoscroll();
 })
 
 socket.on('roomData',({room, users})=>{
