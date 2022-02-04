@@ -4,7 +4,7 @@ const express=require('express');
 const socketio=require('socket.io');
 const Filter=require('bad-words');
 const { generateMessage, generateLocationMessage }=require('./utils/messages.js');
-const { addUser, removeUser, getUser, getUsersInRoom, } = require('./utils/users.js')
+const { addUser, removeUser, getUser, getUsersInRoom, addToRooms, removeFromRooms, getRooms} = require('./utils/users.js')
 
 const app=express();
 const server = http.createServer(app); // creates new webserver. Ordinarily this is automatically done but we specifically need to access this server variable for setting up socketio.
@@ -15,6 +15,7 @@ const publicDirectoryPath = path.join(__dirname, '../public');
 const port=process.env.PORT || 3000;
 app.use(express.static(publicDirectoryPath));   // SERVES up contents of this 'public' folder so we can access any file in this folder, e.g. test.html is accessible from localhost:3000/test.html (index.html is available from just 'localhost:3000/' by default)
 // Main built in event = 'connection'
+
 io.on('connection',(socket)=>{
   console.log("New Web Socket Connection!!!");
   // socket.emit('message',"Welcome to my realtime messaging app");   // Sends msg to terminal when given client connects
@@ -28,10 +29,14 @@ io.on('connection',(socket)=>{
   // socket.broadcast.emit('message', generateMessage("A new user has joined!!!"));
   
   // socket.on('join',({username, room})=>{
-    // socket.on('join',({username, room},callback)=>{
-    // const { error, user } = addUser({ id:socket.id, username, room });  // socket.id is unique ID for that particular connection.
-    socket.on('join',(options,callback)=>{ // These 2 lines are effectively the same as 2 commented lines above
-      const { error, user } = addUser({ id:socket.id, ...options }); 
+    socket.on('join',({username, room},callback)=>{
+    const filter=new Filter();
+    if (filter.isProfane(room)){
+      return callback('Inappropriate room name!!!');
+    }
+    const { error, user } = addUser({ id:socket.id, username, room });  // socket.id is unique ID for that particular connection.
+    // socket.on('join',(options,callback)=>{ // These 2 lines are effectively the same as 2 commented lines above
+    //   const { error, user } = addUser({ id:socket.id, ...options }); 
     if (error){
       // return socket.emit('message',generateMessage(error));
       return callback(error);
@@ -42,10 +47,15 @@ io.on('connection',(socket)=>{
     // socket.broadcast.to.emit => goes to everyone in that room except that user (client)
     socket.emit('message', generateMessage("Admin", "Welcome to my realtime messaging app"));
     socket.broadcast.to(user.room).emit('message', generateMessage("Admin", `${user.username} has joined!!!`));
+    addToRooms(({ id:socket.id, username:user.username, room:user.room }));   // gb addition   
     io.to(user.room).emit('roomData',{
       room: user.room,
       users: getUsersInRoom(user.room),
     });
+    // gb addition
+    io.emit('globalData',{
+      rooms: getRooms(),      // gb addition
+    })
     callback(); // Calling without args, i.e. no error.
   })
 
@@ -68,11 +78,16 @@ io.on('connection',(socket)=>{
 socket.on("disconnect", ()=>{
   const user = removeUser(socket.id);
   if (user){    // User might have never successfully joined a chat room. If they didn't then no need to send them this message.
+    removeFromRooms(({ id:socket.id, username:user.username, room:user.room }));  // gb addition
     // io.emit('message', generateMessage("User has disconnected!!!"));
     io.to(user.room).emit('message', generateMessage("Admin", `${user.username} has disconnected!!!`));
     io.to(user.room).emit('roomData',{
       room: user.room,
       users: getUsersInRoom(user.room),
+    })
+    // gb addition
+    io.emit('globalData',{
+      rooms: getRooms(),      // gb addition
     })
   }
 })

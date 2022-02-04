@@ -18,10 +18,25 @@
          <label for="username">Display Name</label>
          <input type="text" name='username' placeholder="Display Name" required>
          <label for="room">Room</label>
-         <input type="text" name='room' placeholder="Room" required>
+         <input type="text" id="room-input" name='room' placeholder="Room" required>
          <button>Join</button>
        </form>
     </div>
   </div>
+  <!-- gb addition -->
+  <script id="rooms-dropdown-template" type='text/html'>
+  <!--  [ { room: 'free room', number: 2 }, { room: 'xroom', number: 1 } ] -->
+    <select id='rooms-dropdown'> 
+      {{#rooms}}
+        <option value="{{rooms.room}} - ({{rooms.number}})"></option>
+      {{/rooms}}
+    </select>
+  </script>
+
+  <!-- gb addition - do I need all these? -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src='/js/chat.js'></script> <!-- Client side code -->
+
 </body>
 </html>

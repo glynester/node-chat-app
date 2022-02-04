@@ -9,11 +9,13 @@ const $messageFormButton=$messageForm.querySelector('button');
 const $sendLocationButton=document.querySelector('#send-location');
 const $messages=document.querySelector('#messages');
 const $sidebar=document.querySelector('#sidebar');
+const $sallroomslisting=document.querySelector('#all-rooms-listing');
 
 // Templates
 const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML <= Must have this!
 const $locationMessageTemplate=document.querySelector('#location-message-template').innerHTML;
 const $sidebarTemplate=document.querySelector('#sidebar-template').innerHTML;
+const $allRoomsTemplate=document.querySelector('#all-rooms-template').innerHTML;
 
 // Options
 // location.search gives the query string in a web address
@@ -69,12 +71,21 @@ socket.on('locationMessage',(message)=>{
 })
 
 socket.on('roomData',({room, users})=>{
-  console.log(room, users);
+  console.log('roomData=>',room, users);
   const html = Mustache.render($sidebarTemplate,{
     room,
     users,
   })
   $sidebar.innerHTML=html;
+})
+
+// gb addition
+socket.on('globalData',({rooms})=>{
+  console.log('globalData=>',rooms);
+  const html = Mustache.render($allRoomsTemplate,{
+    rooms,      // gb addition
+  })
+  $sallroomslisting.innerHTML=html;
 })
 
 // document.querySelector('form').addEventListener('submit',(e)=>{
