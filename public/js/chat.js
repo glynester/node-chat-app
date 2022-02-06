@@ -108,29 +108,61 @@ socket.on('globalData',({rooms})=>{
   });  
 });
 
-$sendLocationButton.addEventListener('click',()=>{
+// https://stackoverflow.com/questions/10077606/check-if-geolocation-was-allowed-and-get-lat-lon
+function getCoords() {
+  return new Promise((resolve, reject) =>
+    navigator.permissions ?
+      // Permission API is implemented
+      navigator.permissions.query({
+        name: 'geolocation'
+      }).then(permission =>
+        // is geolocation granted?
+        permission.state === "granted"
+          ? navigator.geolocation.getCurrentPosition(pos => resolve(pos.coords)) 
+          : resolve(null)
+      ) :
+    // Permission API was not implemented
+    reject(new Error("Permission API is not supported"))
+  )
+}
+
+$sendLocationButton.addEventListener('click',async ()=>{
   // Modern browsers should have this.
   if (!navigator.geolocation){
     return alert("Your browser doesn't support geolocation!!!");
   }
+  let val=true, latitude, longitude;
+  await getCoords().then(coords => {
+    val = coords;
+    // console.log("val2",val)
+  })
+  if (!val){
+    return alert("You need to enable the location on your device to be able to share it!!!");
+  } else {
+    latitude = val.latitude;
+    longitude = val.longitude;
+  }
+  // console.log("==> ",latitude,longitude)
   // Disable button while processing
   // $sendLocationButton.enabled=false;
   $sendLocationButton.setAttribute('disabled',true);
 
   // getCurrentPosition is asynchronous but doesn't support promises or async await. Have to use callback
-  navigator.geolocation.getCurrentPosition((position)=>{
+  // navigator.geolocation.getCurrentPosition((position)=>{
     // console.log(position);
+    
     // This didn't work when I just sent position back to the server.
-    socket.emit('sendLocation', {   // first argument is event name, then location data and thrid arg is acknowledgement callback.
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
+    await socket.emit('sendLocation', {   // first argument is event name, then location data and thrid arg is acknowledgement callback.
+      // latitude: position.coords.latitude,
+      // longitude: position.coords.longitude,
+      latitude,
+      longitude
     },()=>{     // callback function.
       // Re enable button while processing // $sendLocationButton.disabled=false; also works
       $sendLocationButton.removeAttribute('disabled');
       console.log("Location Shared!!!");
     });
-  })
-  
+  // })
 })
 
 // socket.emit('join',{ username, room}); 
