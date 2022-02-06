@@ -125,7 +125,7 @@ function getCoords() {
     reject(new Error("Permission API is not supported"))
   )
 }
-
+// Code changes to handle location not being available.
 $sendLocationButton.addEventListener('click',async ()=>{
   // Modern browsers should have this.
   if (!navigator.geolocation){
@@ -134,32 +134,24 @@ $sendLocationButton.addEventListener('click',async ()=>{
   let val=true, latitude, longitude;
   await getCoords().then(coords => {
     val = coords;
-    // console.log("val2",val)
   })
   if (!val){
-    return alert("You need to enable the location on your device to be able to share it!!!");
+    return alert("You need to enable the location on your device and/or grant location permission to this website!!!");
   } else {
     latitude = val.latitude;
     longitude = val.longitude;
   }
-  // console.log("==> ",latitude,longitude)
-  // Disable button while processing
-  // $sendLocationButton.enabled=false;
   $sendLocationButton.setAttribute('disabled',true);
-
   // getCurrentPosition is asynchronous but doesn't support promises or async await. Have to use callback
+  // getCurrentPosition disabled because it's used in getCoords function.
   // navigator.geolocation.getCurrentPosition((position)=>{
-    // console.log(position);
-    
-    // This didn't work when I just sent position back to the server.
-    await socket.emit('sendLocation', {   // first argument is event name, then location data and thrid arg is acknowledgement callback.
+    await socket.emit('sendLocation', {   // first argument is event name, then location data and third arg is acknowledgement callback.
       // latitude: position.coords.latitude,
       // longitude: position.coords.longitude,
       latitude,
       longitude
     },()=>{     // callback function.
-      // Re enable button while processing // $sendLocationButton.disabled=false; also works
-      $sendLocationButton.removeAttribute('disabled');
+      $sendLocationButton.removeAttribute('disabled'); // $sendLocationButton.disabled=false; also works
       console.log("Location Shared!!!");
     });
   // })
