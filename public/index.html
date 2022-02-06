@@ -18,25 +18,43 @@
          <label for="username">Display Name</label>
          <input type="text" name='username' placeholder="Display Name" required>
          <label for="room">Room</label>
-         <input type="text" id="room-input" name='room' placeholder="Room" required>
+         <input type="text" list="rooms-list" id="room-input" name='room' placeholder="Room" autocomplete="off" required>
+         <datalist id="rooms-list" onload="addRoomsDropdown()"></datalist>
+        </datalist>
          <button>Join</button>
        </form>
     </div>
   </div>
   <!-- gb addition -->
-  <script id="rooms-dropdown-template" type='text/html'>
   <!--  [ { room: 'free room', number: 2 }, { room: 'xroom', number: 1 } ] -->
-    <select id='rooms-dropdown'> 
+  <script id="rooms-dropdown-template" type='text/html'>
+      
       {{#rooms}}
-        <option value="{{rooms.room}} - ({{rooms.number}})"></option>
+        <option value="{{room}}">Current users - ({{number}})</option>
       {{/rooms}}
-    </select>
+    
   </script>
+
+  <!-- var my_list=document.getElementById("months");
+  my_list.innerHTML = str; -->
+
+  <!-- <input type="text" name="product" list="productName"/>
+    <datalist id="productName">
+        <option value="Pen">Pen</option>
+        <option value="Pencil">Pencil</option>
+        <option value="Paper">Paper</option>
+    </datalist> -->
 
   <!-- gb addition - do I need all these? -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src='/js/chat.js'></script> <!-- Client side code -->
-
+  <!-- <script src='/js/chat.js'></script> --> <!-- Client side code -->
+  <script src='/js/index.js'></script> <!-- Client side code -->
+  <script> 
+    window.onload = function funLoad() { 
+        // console.log('The Script will load now.'); 
+        addRoomsDropdown();
+    } 
+</script> 
 </body>
 </html>

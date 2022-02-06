@@ -100,8 +100,17 @@ socket.on('sendLocation',(coords, callback)=>{
   callback(); // callback runs once location has been shared. No need to pass an argument.
 })
 
+//gb code
+socket.on('updateRoomsForLoginScreen',()=>{
+  io.emit('globalData',{
+    rooms: getRooms(),      
+  })
+})
+
 })
 // Note - "message" event is emitted twice from server (see above) with different messages.
+
+
 
 // app.listen(port,()=>{
 server.listen(port,()=>{

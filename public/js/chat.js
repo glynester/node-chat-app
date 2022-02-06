@@ -9,7 +9,7 @@ const $messageFormButton=$messageForm.querySelector('button');
 const $sendLocationButton=document.querySelector('#send-location');
 const $messages=document.querySelector('#messages');
 const $sidebar=document.querySelector('#sidebar');
-const $sallroomslisting=document.querySelector('#all-rooms-listing');
+const $allroomslisting=document.querySelector('#all-rooms-listing');
 
 // Templates
 const $messageTemplate=document.querySelector('#message-template').innerHTML;     // .innerHTML <= Must have this!
@@ -85,7 +85,7 @@ socket.on('globalData',({rooms})=>{
   const html = Mustache.render($allRoomsTemplate,{
     rooms,      // gb addition
   })
-  $sallroomslisting.innerHTML=html;
+  $allroomslisting.innerHTML=html;
 })
 
 // document.querySelector('form').addEventListener('submit',(e)=>{
