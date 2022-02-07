@@ -134,6 +134,8 @@ $sendLocationButton.addEventListener('click',async ()=>{
   let val=true, latitude, longitude;
   await getCoords().then(coords => {
     val = coords;
+  }).catch((error)=>{
+    return alert("Error: "+error);
   })
   if (!val){
     return alert("You need to enable the location on your device and/or grant location permission to this website!!!");
@@ -143,7 +145,7 @@ $sendLocationButton.addEventListener('click',async ()=>{
   }
   $sendLocationButton.setAttribute('disabled',true);
   // getCurrentPosition is asynchronous but doesn't support promises or async await. Have to use callback
-  // getCurrentPosition disabled because it's used in getCoords function.
+  // getCurrentPosition disabled because it's used in getCoords function.cleaa
   // navigator.geolocation.getCurrentPosition((position)=>{
     await socket.emit('sendLocation', {   // first argument is event name, then location data and third arg is acknowledgement callback.
       // latitude: position.coords.latitude,
